@@ -206,7 +206,7 @@ class RegisterPage(AuthBasePage):
     def dispatch_request(self) -> str:
         # TODO: handle exceptions
         form = RegisterForm()
-        if request.method == 'GET' or form.validate_on_submit():
+        if request.method == 'GET' or not form.validate_on_submit():
             return self.do_get(form, '')
 
         else:
@@ -238,7 +238,7 @@ class LoginPage(AuthBasePage):
     def dispatch_request(self) -> str:
         # TODO: handle exceptions
         form = LoginForm()
-        if request.method == 'GET' or form.validate_on_submit():
+        if request.method == 'GET' or not form.validate_on_submit():
             return self.do_get(form, '')
 
         else:
