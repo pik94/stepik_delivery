@@ -3,9 +3,9 @@ from flask_admin import Admin as AdminPanel
 from flask_migrate import Migrate
 
 from delivery_site import config as cfg
-from delivery_site.admin import MealAdmin, OrderAdmin, UserAdmin
+from delivery_site.admin import CategoryAdmin, MealAdmin, OrderAdmin, UserAdmin
 from delivery_site.database import db_model, get_connection_string
-from delivery_site.database.models import User, Meal, Order
+from delivery_site.database.models import Category, Meal, Order, User
 from delivery_site.views import (
     AccountPage, AddToCart, Admin, CartPage, DeleteFromCart, IndexPage,
     LoginPage, LogoutPage, OrderedPage, RegisterPage
@@ -27,6 +27,7 @@ admin = AdminPanel(app, url='/admin_panel')
 admin.add_view(UserAdmin(User, db_model.session))
 admin.add_view(MealAdmin(Meal, db_model.session))
 admin.add_view(OrderAdmin(Order, db_model.session))
+admin.add_view(CategoryAdmin(Category, db_model.session))
 
 
 # index page

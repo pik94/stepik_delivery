@@ -11,3 +11,7 @@ class OrderAdmin(ModelView):
 
 class MealAdmin(ModelView):
     pass
+
+
+class CategoryAdmin(ModelView):
+    pass
