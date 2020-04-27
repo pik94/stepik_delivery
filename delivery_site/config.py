@@ -35,7 +35,7 @@ SERVER_PORT = os.environ.get('SERVER_PORT', SERVER_PORT)
 
 # Security
 CSRF_TOKEN = str(uuid.uuid4())
-CSRF_TOKEN = os.environ.get('CRSF_TOKEN', CSRF_TOKEN)
+CSRF_TOKEN = os.environ.get('CSRF_TOKEN', CSRF_TOKEN)
 
 # Admin
 ADMIN_LOGIN = 'admin@delivery.com'

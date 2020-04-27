@@ -14,11 +14,16 @@
         <form action="{{ url_for(template) }}" method="POST">
           <div class="text-center mt-5 b-1">
             <img class="mb-4" src="{{ url_for('static', filename='cargo.png') }}" alt="" width="92" height="52">
-<!--            <h1 class="h3 mb-3 font-weight-normal">Stepik delivery</h1>-->
             <h1 class="h3 mb-3 font-weight-normal">
               <a class="navbar-brand " href="{{ url_for('index') }}">Stepik Delivery</a>
             </h1>
-            <p class="h5 font-weight-light">Войдите, чтобы управлять</p>
+            {% if template == 'login' %}
+              <p class="h5 font-weight-light">Войдите или <a href="{{ url_for('register') }}">зарегистрируйтесь</a></p>
+            {% else %}
+              <p class="h5 font-weight-light"> Уже есть аккаунт? Тогда <a href="{{ url_for('login') }}">войдите</a></p>
+              <p class="h5 font-weight-light">или</p>
+              <p class="h5 font-weight-light">Зарегистрируйтесь</p>
+            {% endif %}
           </div>
           <div class="mt-5 form-label-group">
             {{ form.email.label(class="text-muted") }}

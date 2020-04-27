@@ -78,7 +78,7 @@ class CartPage(Base):
             if user and session.get('id'):
                 user_id = user.id
             else:
-                user_id = 0
+                user_id = None
                 user = None
 
             meals = self.get_meals(cart)
