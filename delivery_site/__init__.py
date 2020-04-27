@@ -4,8 +4,8 @@ from flask_migrate import Migrate
 from delivery_site import config as cfg
 from delivery_site.database import db_model, get_connection_string
 from delivery_site.views import (
-    AccountPage, AddToCart, CartPage, IndexPage, LoginPage, LogoutPage,
-    OrderedPage, RegisterPage
+    AccountPage, AddToCart, CartPage, DeleteFromCart, IndexPage,
+    LoginPage, LogoutPage, OrderedPage, RegisterPage
     )
 
 
@@ -23,9 +23,13 @@ migrate = Migrate(app, db_model)
 # index page
 app.add_url_rule('/', view_func=IndexPage.as_view('index'))
 
-# add to cart page
+# add to cart
 app.add_url_rule('/addtocart/<int:meal_id>',
                  view_func=AddToCart.as_view('addtocart'))
+
+# remove from cart
+app.add_url_rule('/removefromcart/<int:meal_id>',
+                 view_func=DeleteFromCart.as_view('delete'))
 
 # cart page
 app.add_url_rule('/cart', view_func=CartPage.as_view('cart'))

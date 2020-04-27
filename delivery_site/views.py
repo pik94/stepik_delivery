@@ -40,6 +40,21 @@ class AddToCart(View):
         return redirect('/')
 
 
+class DeleteFromCart(View):
+    def dispatch_request(self, meal_id: int) -> str:
+        cart = []
+        removed = False
+        for cart_meal_id in session.get('cart', []):
+            if meal_id == cart_meal_id and not removed:
+                removed = True
+                continue
+            cart.append(cart_meal_id)
+
+        session['cart'] = cart
+
+        return redirect(url_for('cart'))
+
+
 class CartPage(Base):
     methods = ['GET', 'POST']
 
