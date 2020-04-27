@@ -2,7 +2,7 @@ import datetime as dt
 from itertools import groupby
 from typing import Dict, List, Union
 
-from flask import redirect, render_template, request, session, url_for
+from flask import abort, redirect, render_template, request, session, url_for
 from flask.views import View
 
 from delivery_site import config as cfg
@@ -11,6 +11,17 @@ from delivery_site.database.models import (
     Category, Meal, Order, OrdersMeals, User
     )
 from delivery_site.forms import LoginForm, RegisterForm, OrderSubmitForm
+
+
+class Admin(View):
+    def dispatch_request(self) -> str:
+        if session.get('id'):
+            if session.get('is_admin'):
+                return redirect('/admin_panel')
+            else:
+                abort(404)
+        else:
+            return redirect(url_for('login'))
 
 
 class Base(View):
@@ -240,6 +251,8 @@ class LoginPage(AuthBasePage):
                 if user.is_valid_password(password):
                     db_model.session.commit()
                     session['id'] = user.id
+                    if user.email == cfg.ADMIN_LOGIN:
+                        session['is_admin'] = True
                     session['email'] = email
                     return redirect(url_for('account'))
                 else:
@@ -253,7 +266,7 @@ class LoginPage(AuthBasePage):
 class LogoutPage(AuthBasePage):
     def dispatch_request(self) -> str:
         # TODO: handle exceptions
-        for key in ['id', 'email']:
+        for key in ['id', 'email', 'is_admin']:
             if key in session:
                 session.pop(key)
         return redirect(url_for('login'))

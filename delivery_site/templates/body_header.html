@@ -7,6 +7,9 @@
       <img class="ml-2" src="{{ url_for('static', filename='emoji.png') }}" alt="" width="24" height="25">
       <a href="{{ url_for('cart') }}" class="btn btn-light btn-sm ml-4">Корзина ({{ n_meals }})</a>
       {% if session.get('id') %}
+        {% if session.get('is_admin') %}
+          <a href="{{ url_for('admin') }}" class="btn btn-light btn-sm ml-4">Админ</a>
+        {% endif %}
         <a href="{{ url_for('logout') }}" class="btn btn-light btn-sm ml-4">Выйти</a>
       {% else %}
         <a href="{{ url_for('login') }}" class="btn btn-warning btn-sm ml-4">Войти</a>
