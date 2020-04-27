@@ -1,3 +1,4 @@
+from flask import session
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField, SubmitField
 from wtforms.validators import Email, InputRequired, Length
@@ -8,6 +9,18 @@ def check_order_price(form, field):
         raise ValueError('Вы ничего не заказали')
 
 
+def check_user_email(form, field):
+    """
+    This method checks that a user writes his email when ordering.
+    :param form:
+    :param field:
+    :return:
+    """
+    email = session.get('email')
+    if email and email != field.data:
+        raise ValueError('Используйте свой email')
+
+
 class OrderSubmitForm(FlaskForm):
     name = StringField('Ваше имя', [InputRequired()],
                        render_kw={'placeholder': 'Иван'})
@@ -15,7 +28,8 @@ class OrderSubmitForm(FlaskForm):
                           render_kw={'placeholder': 'Москва, ул. Моховая, 1'})
     email = StringField('Ваш e-mail',
                         [InputRequired(),
-                         Email(message='Неверный формат email')],
+                         Email(message='Неверный формат email'),
+                         check_user_email],
                         render_kw={'placeholder': 'ivan@ivan.com'})
     phone = StringField('Ваш номер', [InputRequired()],
                         render_kw={'placeholder': '+7(495)14234567'})

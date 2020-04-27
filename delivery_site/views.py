@@ -73,14 +73,10 @@ class CartPage(Base):
         cart = session.get('cart', [])
         form = OrderSubmitForm()
 
-        email = session.get('email')
-        if email:
-            form.email.data = email
-
         if request.method == 'POST' and form.validate_on_submit():
             name = form.name.data
             address = form.address.data
-            email = session.get('email', form.email.data)
+            email = form.email.data
             phone = form.phone.data
             order_price = form.order_price.data
 
