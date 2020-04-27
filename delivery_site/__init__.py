@@ -1,23 +1,24 @@
 from flask import Flask
+from flask_migrate import Migrate
 
 from delivery_site import config as cfg
-from delivery_site.app import app
 from delivery_site.database import db_model, get_connection_string
 from delivery_site.views import (
-    AccountPage, AddToCart, CartPage,IndexPage, LoginPage, LogoutPage,
+    AccountPage, AddToCart, CartPage, IndexPage, LoginPage, LogoutPage,
     OrderedPage, RegisterPage
     )
 
 
+app = Flask(__name__, template_folder='templates')
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = get_connection_string()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = cfg.CSRF_TOKEN
 
+
 db_model.init_app(app)
-# app.app_context().push()
-with app.app_context():
-    db_model.create_all()
+
+migrate = Migrate(app, db_model)
 
 # index page
 app.add_url_rule('/', view_func=IndexPage.as_view('index'))

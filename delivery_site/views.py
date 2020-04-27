@@ -1,11 +1,15 @@
 import datetime as dt
+from itertools import groupby
 from typing import Dict, List, Union
 
 from flask import redirect, render_template, request, session, url_for
 from flask.views import View
 
 from delivery_site import config as cfg
-from delivery_site.database import db_model, Category, Meal, Order, User
+from delivery_site.database import db_model
+from delivery_site.database.models import (
+    Category, Meal, Order, OrdersMeals, User
+    )
 from delivery_site.forms import LoginForm, RegisterForm, OrderSubmitForm
 
 
@@ -40,19 +44,35 @@ class CartPage(Base):
     methods = ['GET', 'POST']
 
     def dispatch_request(self) -> str:
+        cart = session.get('cart', [])
         form = OrderSubmitForm()
+
+        email = session.get('email')
+        if email:
+            form.email.data = email
+
         if request.method == 'POST' and form.validate_on_submit():
             name = form.name.data
             address = form.address.data
-            email = form.email.data
+            email = session.get('email', form.email.data)
             phone = form.phone.data
             order_price = form.order_price.data
 
-            user = db_model.session.query(User).filter(User.email==email).first()
-            if user:
+            user = db_model.session.query(User).filter(
+                User.email == email).first()
+            if user and session.get('id'):
                 user_id = user.id
             else:
                 user_id = 0
+                user = None
+
+            meals = self.get_meals(cart)
+
+            order_meal_list = [
+                OrdersMeals(meal_quantity=len(list(id_group)),
+                            meal=meals[meal_id])
+                for meal_id, id_group in groupby(cart)
+            ]
 
             order = Order(date=dt.datetime.utcnow().replace(microsecond=0),
                           order_price=order_price,
@@ -61,7 +81,9 @@ class CartPage(Base):
                           phone=phone,
                           address=address,
                           status=cfg.OrderStatus.in_progress,
-                          user_id=user_id)
+                          user_id=user_id,
+                          user=user,
+                          meals=order_meal_list)
 
             db_model.session.add(order)
             db_model.session.commit()
@@ -69,7 +91,6 @@ class CartPage(Base):
             session['cart'] = []
             return redirect(url_for('ordered'))
 
-        cart = session.get('cart', [])
         data = self.get_meal_data(cart)
         total_price = sum([datum['total_meal_price']
                            for datum in data.values()])
@@ -85,8 +106,7 @@ class CartPage(Base):
             return {}
 
         # TODO: handle exceptions
-        rows = db_model.session.query(Meal).filter(Meal.id.in_(meal_ids)).all()
-        meals = {row.id: row for row in rows}
+        meals = self.get_meals(meal_ids)
         data = {}
         for meal_id in meal_ids:
             if meal_id not in data:
@@ -101,6 +121,11 @@ class CartPage(Base):
 
         return data
 
+    def get_meals(self, meal_ids: List[int]) -> Dict[int, Meal]:
+        rows = db_model.session.query(Meal).filter(Meal.id.in_(meal_ids)).all()
+        meals = {row.id: row for row in rows}
+        return meals
+
 
 class AccountPage(Base):
     def dispatch_request(self) -> str:
@@ -110,8 +135,23 @@ class AccountPage(Base):
         if user_id is None:
             return redirect(url_for('login'))
 
+        orders = {}
         user = User.query.get(user_id)
-        orders = user.orders
+        for order in user.orders:
+            order_data = []
+            total_order_price = 0
+            for order_meal in order.meals:
+                quantity = order_meal.meal_quantity
+                data = {
+                    'meal_title': order_meal.meal.title,
+                    'meal_quantity': quantity,
+                    'meal_total_price': quantity * order_meal.meal.price
+                }
+                total_order_price += quantity * order_meal.meal.price
+                order_data.append(data)
+
+            date = order.date.strftime(cfg.DATETIME_TEMPLATE)
+            orders[(date, total_order_price)] = order_data
 
         return self.render_template('account', orders=orders)
 

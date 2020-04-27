@@ -6,13 +6,18 @@ from delivery_site.database.tables import (
     )
 
 
-orders_meals_association = db.Table(
-    ORDERS_MEALS.SELF_NAME,
-    db.Column(ORDERS_MEALS.ORDER_ID, db.Integer,
-              db.ForeignKey(f'{ORDERS.SELF_NAME}.{ORDERS.ID}')),
-    db.Column(ORDERS_MEALS.MEAL_ID, db.Integer,
-              db.ForeignKey(f'{MEALS.SELF_NAME}.{MEALS.ID}'))
-)
+class OrdersMeals(db.Model):
+    __tablename__ = ORDERS_MEALS.SELF_NAME
+    order_id = db.Column(ORDERS_MEALS.ORDER_ID, db.Integer,
+                         db.ForeignKey(f'{ORDERS.SELF_NAME}.{ORDERS.ID}'),
+                         primary_key=True)
+    meal_id = db.Column(ORDERS_MEALS.MEAL_ID, db.Integer,
+                        db.ForeignKey(f'{MEALS.SELF_NAME}.{MEALS.ID}'),
+                        primary_key=True)
+    meal_quantity = db.Column(ORDERS_MEALS.MEAL_QUANTITY, db.Integer,
+                              default=1)
+    meal = db.relationship('Meal', back_populates='orders')
+    order = db.relationship('Order', back_populates='meals')
 
 
 class User(db.Model):
@@ -45,8 +50,7 @@ class Meal(db.Model):
         db.ForeignKey(f'{CATEGORIES.SELF_NAME}.{CATEGORIES.ID}'))
     category = db.relationship('Category', uselist=False,
                                back_populates='meals')
-    orders = db.relationship('Order', secondary=orders_meals_association,
-                             back_populates='meals')
+    orders = db.relationship('OrdersMeals', back_populates='meal')
 
 
 class Category(db.Model):
@@ -73,8 +77,6 @@ class Order(db.Model):
                         db.ForeignKey(f'{USERS.SELF_NAME}.{USERS.ID}'))
 
     user = db.relationship('User', uselist=False, back_populates='orders')
-    meals = db.relationship('Meal', secondary=orders_meals_association,
-                            back_populates='orders')
-
+    meals = db.relationship('OrdersMeals', back_populates='order')
 
 

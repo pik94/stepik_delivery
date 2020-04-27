@@ -39,3 +39,4 @@ class ORDERS_MEALS:
     SELF_NAME = 'orders_meals'
     ORDER_ID = 'order_id'
     MEAL_ID = 'meal_id'
+    MEAL_QUANTITY = 'meal_quantity'

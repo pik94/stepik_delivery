@@ -37,8 +37,17 @@ SERVER_PORT = os.environ.get('SERVER_PORT', SERVER_PORT)
 CSRF_TOKEN = str(uuid.uuid4())
 CSRF_TOKEN = os.environ.get('CRSF_TOKEN', CSRF_TOKEN)
 
+# Admin
+ADMIN_LOGIN = 'admin@delivery.com'
+ADMIN_LOGIN = os.environ.get('ADMIN_LOGIN', ADMIN_LOGIN)
+ADMIN_PASSWORD = str(uuid.uuid4())
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', ADMIN_PASSWORD)
+
 
 class OrderStatus:
     in_progress = 'in_progress'
     done = 'done'
     canceled = 'canceled'
+
+
+DATETIME_TEMPLATE = '%d/%m/%y %H:%M:%S'

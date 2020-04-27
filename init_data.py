@@ -4,6 +4,7 @@ from typing import NoReturn
 import pandas as pd
 
 from delivery_site import app, db_model
+from delivery_site import config as cfg
 from delivery_site.database import Category, Meal, User
 
 
@@ -31,8 +32,8 @@ def main() -> NoReturn:
     ]
 
     default_user = User(id=0,
-                        email='default@default.com',
-                        password=User.hash_password('123456789q'))
+                        email=cfg.ADMIN_LOGIN,
+                        password=User.hash_password(cfg.ADMIN_PASSWORD))
     with app.app_context():
         db_model.session.add_all(meals)
         db_model.session.add_all(categories.values())
