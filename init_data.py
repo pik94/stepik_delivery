@@ -31,7 +31,7 @@ def main() -> NoReturn:
         for _, row in data.iterrows()
     ]
 
-    default_user = User(id=0,
+    default_user = User(id=1,
                         email=cfg.ADMIN_LOGIN,
                         password=User.hash_password(cfg.ADMIN_PASSWORD))
     with app.app_context():
