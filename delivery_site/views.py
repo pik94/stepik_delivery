@@ -262,7 +262,7 @@ class LoginPage(AuthBasePage):
 class LogoutPage(AuthBasePage):
     def dispatch_request(self) -> str:
         # TODO: handle exceptions
-        for key in ['id', 'email', 'is_admin']:
+        for key in ['id', 'email', 'is_admin', 'cart']:
             if key in session:
                 session.pop(key)
         return redirect(url_for('login'))
