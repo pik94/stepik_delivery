@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 from typing import NoReturn
 
@@ -8,8 +9,8 @@ from delivery_site import config as cfg
 from delivery_site.database import Category, Meal, User
 
 
-def main() -> NoReturn:
-    path = Path.cwd()
+def main(args: argparse.Namespace) -> NoReturn:
+    path = Path(args.input)
     categories = pd.read_csv(path / 'categories.csv', header=0)
     categories.rename(columns={'id': 'category_id', 'title': 'cat_title'},
                       inplace=True)
@@ -31,6 +32,13 @@ def main() -> NoReturn:
         for _, row in data.iterrows()
     ]
 
+    if '@' not in cfg.ADMIN_LOGIN:
+        raise ValueError('Invalid form (miss @) of email for ADMIN_LOGIN')
+
+    if len(cfg.ADMIN_PASSWORD) < 5:
+        raise ValueError(('A length of an ADMIN_PASSWORD should have at '
+                          'least 5 symbols.'))
+
     default_user = User(id=1,
                         email=cfg.ADMIN_LOGIN,
                         password=User.hash_password(cfg.ADMIN_PASSWORD))
@@ -42,4 +50,12 @@ def main() -> NoReturn:
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i',
+                        '--input',
+                        required=True,
+                        help=('A path to a directory with csv files for '
+                              'filling tables at database'))
+
+    args = parser.parse_args()
+    main(args)

@@ -17,7 +17,7 @@ logging into an account.
 #### Running
 1.  Export necessary environment variables:
     ```shell script
-    export DB_USER=user_1 DB_PASSWORD=super_secret_pass
+    export DB_USER=user_1 DB_PASSWORD=super_secret_pass ADMIN_LOGIN=admin@admin.com ADMIN_PASSWORD=12345
     ```
     A list of variables:
     | Variable | Require | Default | Description|
@@ -42,7 +42,7 @@ logging into an account.
    
 3. Fill tables
     ```shell script
-    python init_data.py
+    python init_data.py -i /path/to/a/directory/with/csv
     ```
 
 4.  For running on a production server:

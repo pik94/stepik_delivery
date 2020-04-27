@@ -3,7 +3,6 @@
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
          <a class="navbar-brand" href="{{ url_for('index') }}">Stepik Delivery</a>
       </ul>
-<!--      <p class="my-2 text-white bg-dark ">Корзина (2 блюда 455 руб.)</p>-->
       <img class="ml-2" src="{{ url_for('static', filename='emoji.png') }}" alt="" width="24" height="25">
       {% if session.get('id') %}
         {% if session.get('is_admin') %}

@@ -78,5 +78,3 @@ class Order(db.Model):
 
     user = db.relationship('User', uselist=False, back_populates='orders')
     meals = db.relationship('OrdersMeals', back_populates='order')
-
-
